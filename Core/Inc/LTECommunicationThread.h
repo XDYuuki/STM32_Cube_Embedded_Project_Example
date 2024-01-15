@@ -12,11 +12,12 @@
 
 typedef enum
 {
-	MODULE_START_OK = 0,
-	MODULE_START_FAIL = 1
+	MODULE_ANS_OK = 0,
+	MODULE_ANS_FAIL = 1
 }ModuleStartup;
 
 void LTECommunicationThreadRoutine(void *argument);
 ModuleStartup StartupBG95(void);
+ModuleStartup NetWorkConnection(void);
 
 #endif /* INC_LTECOMMUNICATIONTHREAD_H_ */
