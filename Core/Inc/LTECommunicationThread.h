@@ -19,5 +19,6 @@ typedef enum
 void LTECommunicationThreadRoutine(void *argument);
 ModuleStartup StartupBG95(void);
 ModuleStartup NetWorkConnection(void);
+ModuleStartup ActivateContext(void);
 
 #endif /* INC_LTECOMMUNICATIONTHREAD_H_ */
