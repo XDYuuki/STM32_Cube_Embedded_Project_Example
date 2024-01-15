@@ -49,6 +49,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+extern UART_HandleTypeDef huart2;
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 

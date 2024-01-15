@@ -10,10 +10,10 @@
 
 struct ThreadCommunication
 {
-	int Sensor1Reading;
+	uint16_t Sensor1Reading;
 	unsigned char Sensor2Reading;
 	unsigned char CommandReady;
-	uint8_t ActuatorCommand [32];
+	uint8_t ActuatorCommand [10];
 };
 
 extern struct ThreadCommunication SharedData;

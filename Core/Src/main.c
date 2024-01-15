@@ -36,7 +36,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim16;
+//TIM_HandleTypeDef htim16;
 
 UART_HandleTypeDef huart2;
 

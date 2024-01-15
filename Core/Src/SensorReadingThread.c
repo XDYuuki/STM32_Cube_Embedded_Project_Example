@@ -15,20 +15,33 @@
 
 void SensorReadingThreadRoutine(void *argument)
 {
-	  TickType_t currentTicks = xTaskGetTickCount();
-	  GPIO_PinState Sensor1StateValue;
+	  TickType_t nextCheck = xTaskGetTickCount() + FIVE_SECONDS_MS;
+	  GPIO_PinState Sensor2StateValue;
+	  uint16_t Sensor1AnalogValue;
+
 	while(1)
 	{
 		//checks every 5 seconds
-		if(currentTicks >= (xTaskGetTickCount() + pdMS_TO_TICKS(5000)))
+		if(xTaskGetTickCount() >= nextCheck)
 		{
-			Sensor1StateValue = Sensor1Reading();
-			UpdateReadings(Sensor1StateValue);
+			Sensor2StateValue = Sensor2Reading();
+			Sensor1AnalogValue = Sensor1AnalogReading();
+			UpdateReadings(Sensor1AnalogValue, Sensor2StateValue);
+
+			nextCheck = xTaskGetTickCount() + FIVE_SECONDS_MS;
 		}
 	}
 }
 
-GPIO_PinState Sensor1Reading()
+uint16_t Sensor1AnalogReading(void)
+{
+	uint16_t AnalogResponse = 0;
+
+	//Execute the analog value here
+	return AnalogResponse;
+}
+
+GPIO_PinState Sensor2Reading(void)
 {
 	GPIO_PinState Sensor2ReadingState;
 	Sensor2ReadingState = HAL_GPIO_ReadPin(SENSOR_2_GPIO_Port, SENSOR_2_Pin);
@@ -36,15 +49,17 @@ GPIO_PinState Sensor1Reading()
 	return Sensor2ReadingState;
 }
 
-void UpdateReadings(GPIO_PinState Sensor1StateValue)
+void UpdateReadings(uint16_t Sensor1AnalogValue, GPIO_PinState Sensor2StateValue)
 {
     osMutexAcquire(ThreadCommunication_mutex, osWaitForever);
 
+    SharedData.Sensor1Reading = Sensor1AnalogValue;
+    SharedData.Sensor2Reading = Sensor2StateValue;
 
     osMutexRelease(ThreadCommunication_mutex);
 }
 
-uint8_t CheckPendingCommand()
+uint8_t CheckPendingCommand(void)
 {
     osMutexAcquire(ThreadCommunication_mutex, osWaitForever);
 
@@ -52,20 +67,23 @@ uint8_t CheckPendingCommand()
     {
     	if(checkCRC16(SharedData.ActuatorCommand, sizeof(SharedData.ActuatorCommand)))
     	{
-
+    		//Handle the command list and execute it
     	}
     }
 
+    SharedData.CommandReady = false;
     osMutexRelease(ThreadCommunication_mutex);
 
 	return 0;
 }
 
-void ExecuteActuatorCommand(enum ActuatorCommand Command)
+void ExecuteActuatorCommand(ActuatorCommand Command)
 {
 	if(Command == TURN_ON)
 	{
-		//set Actuatior GPIO
 		HAL_GPIO_WritePin(ACTUATOR_GPIO_Port, ACTUATOR_Pin, GPIO_PIN_SET);
+	}else
+	{
+		HAL_GPIO_WritePin(ACTUATOR_GPIO_Port, ACTUATOR_Pin, GPIO_PIN_RESET);
 	}
 }
